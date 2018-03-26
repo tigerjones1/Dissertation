@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - GM
+  - QuestionMark
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Ground
+  - Player
+  - Ignore
+  - Platforms
+  - Background
+  - Projectiles
+  - Enemies
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: QuestionMark
+    uniqueID: 2331300317
+    locked: 0
+  - name: Background
+    uniqueID: 3995324007
+    locked: 0
+  - name: Foreground
+    uniqueID: 1942550023
+    locked: 0
+  - name: Particles
+    uniqueID: 139934885
+    locked: 0
+  - name: Player
+    uniqueID: 3802554263
+    locked: 0
+  - name: UI
+    uniqueID: 4016425965
+    locked: 0
