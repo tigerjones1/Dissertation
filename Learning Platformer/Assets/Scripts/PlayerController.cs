@@ -2,107 +2,16 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
-/*{
-
-    public float moveSpeed;
-    public float jumpHeight;
-
-    public Transform groundCheck;
-    public float groundCheckRadius;
-    public LayerMask whatIsGround;
-    private bool grounded;
-
-    private bool doubleJumped;
-    private bool facingRight = true;
-
-    Transform playerGraphics;
-
-    private Animator anim;
-    // Use this for initialization
-    void Start()
-    {
-        anim = GetComponent<Animator>();
-        playerGraphics = transform.FindChild("PlayerIdle");
-        if (playerGraphics == null)
-        {
-            Debug.LogError("no playerGraphics object as a child of the player found");
-        }
-    }
-
-    void FixedUpdate()
-    {
-
-        grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-        if (grounded)
-            doubleJumped = false;
-
-        if (Input.GetKeyDown(KeyCode.W) && grounded)
-        {
-            //GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumpHeight);
-            Jump();
-        }
-
-        if (Input.GetKeyDown(KeyCode.W) && !doubleJumped && !grounded)
-        {
-            //GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumpHeight);
-            Jump();
-            doubleJumped = true;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-        }
-
-        anim.SetFloat("Speed", Mathf.Abs(GetComponent<Rigidbody2D>().velocity.x));
-        anim.SetBool("Ground", grounded);
-
-        if (GetComponent<Rigidbody2D>().velocity.x > 0 && !facingRight)
-        {
-            Flip();
-        }
-        else if (GetComponent<Rigidbody2D>().velocity.x < 0 && facingRight)
-        {
-            Flip();
-        }
-    }
-
-    public void Jump()
-    {
-        GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumpHeight);
-    }
-
-    private void Flip()
-    {
-        facingRight = !facingRight;
-
-        Vector3 theScale = playerGraphics.localScale;
-        theScale.x *= -1;
-        playerGraphics.localScale = theScale;
-    }
-}*/
 
 {
-    private const float SkinWidth = 0.02f;
-    private const int TotalHorizontalRays = 8;
-    private const int TotalVerticalRays = 4;
+    private const float SkinWidth = 0.02f;  //distance between character and object it is colliding with allowed
+    private const int TotalHorizontalRays = 8;  //total amount of Rays(arrows) coming out from the character horizontally
+    private const int TotalVerticalRays = 4;    //total amount of Rays(arrows) coming out from the character vertically
 
     private static readonly float SlopeLimitTangent = Mathf.Tan(75f * Mathf.Deg2Rad);
 
-    public LayerMask PlatformMask;
-    public ControllerParameter DefaultParameters;
+    public LayerMask PlatformMask; //objects the character is allowed to collide with
+    public ControllerParameter DefaultParameters;   //allows for the controller parameters to be edited from the inspector
 
     public ControllerState State { get; private set; }
     public Vector2 Velocity { get { return velocity; } }
@@ -177,7 +86,7 @@ public class PlayerController : MonoBehaviour
         jumpIn = Parameters.JumpFrequency;
     }
 
-    public void LateUpdate()
+    public void LateUpdate() //used to delay the calculations
     {
         jumpIn -= Time.deltaTime;
         velocity.y += Parameters.Gravity * Time.deltaTime;
@@ -221,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void CalculateRayOrigins()
+    private void CalculateRayOrigins() //invoked on every LateUpdate, pre-computes where the Rays will be shot out from
     {
         var size = new Vector2(boxCollider.size.x * Mathf.Abs(localScale.x), boxCollider.size.y * Mathf.Abs(localScale.y)) / 2;
         var center = new Vector2(boxCollider.offset.x * localScale.x, boxCollider.offset.y * localScale.y);
