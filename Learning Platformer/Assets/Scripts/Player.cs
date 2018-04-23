@@ -4,15 +4,15 @@ using System.Collections;
 public class Player : MonoBehaviour, ITakeDamage
 {
 
-    public bool isFacingRigt;
-    private PlayerController controller;
-    private float normalisedHorizontalSpeed;
+    public bool isFacingRight;  //checks whether the player is facing right or not
+    private PlayerController controller;    //keeps track of the characterController component on this object
+    private float normalisedHorizontalSpeed;    //a value either -1 or 1 that determins if the player is moving left or right
 
     public int Damage = 10;
-    public float MaxSpeed = 8;
-    public float SpeedAccelerationOnGround = 10f;
-    public float SpeedAccelerationInAir = 5f;
-    public int MaxHealth = 100;
+    public float MaxSpeed = 8;  //max speed player can move
+    public float SpeedAccelerationOnGround = 10f;   //used to determine how quicky the speed can change on ground
+    public float SpeedAccelerationInAir = 5f;   //used to determine how quickly the speed can change in air
+    public int MaxHealth = 100; 
     public GameObject OuchEffect;
     public Projectile Projectile;
     public float FireRate;
@@ -29,8 +29,8 @@ public class Player : MonoBehaviour, ITakeDamage
 
     public void Awake()
     {
-        controller = GetComponent<PlayerController>();
-        isFacingRigt = transform.localScale.x > 0;
+        controller = GetComponent<PlayerController>();  //assigns the PlayerCOntroller component to controller
+        isFacingRight = transform.localScale.x > 0; //allows the ability to make player face left or right at the start of a level
         Health = MaxHealth;
     }
 
@@ -40,14 +40,14 @@ public class Player : MonoBehaviour, ITakeDamage
         _canFireIn -= Time.deltaTime;
 
         if (!IsDead)
-            HandleInput();
+            HandleInput();  //changes normalisedHorizontalSpeed based on Key Input
 
-        var movementFactor = controller.State.IsGrounded ? SpeedAccelerationOnGround : SpeedAccelerationInAir;
+        var movementFactor = controller.State.IsGrounded ? SpeedAccelerationOnGround : SpeedAccelerationInAir;  //movementFactor will be set to either Speed OnGround or InAir
 
         if (IsDead)
             controller.SetHorizontalForce(0);
         else
-            controller.SetHorizontalForce(Mathf.Lerp(controller.Velocity.x, normalisedHorizontalSpeed * MaxSpeed, Time.deltaTime * movementFactor));
+            controller.SetHorizontalForce(Mathf.Lerp(controller.Velocity.x, normalisedHorizontalSpeed * MaxSpeed, Time.deltaTime * movementFactor));    //sets the x value of the players velocity to a linear interpolation between the max speed player should move and current velocity using the movementFactor * by the deltaTime
 
         Animator.SetBool("Ground", controller.State.IsGrounded);
         Animator.SetFloat("Speed", Mathf.Abs(controller.Velocity.x) / MaxSpeed);
@@ -72,7 +72,7 @@ public class Player : MonoBehaviour, ITakeDamage
 
     public void RespawnAt(Transform spawnPoint)
     {
-        if (!isFacingRigt)
+        if (!isFacingRight)
             Flip();
 
         IsDead = false;
@@ -101,19 +101,19 @@ public class Player : MonoBehaviour, ITakeDamage
     {
         if (Input.GetKey(KeyCode.D))
         {
-            normalisedHorizontalSpeed = 1;
-            if (!isFacingRigt)
+            normalisedHorizontalSpeed = 1;  //move player to the right
+            if (!isFacingRight) //if player is facing left then flip to face the right
                 Flip();
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            normalisedHorizontalSpeed = -1;
-            if (isFacingRigt)
+            normalisedHorizontalSpeed = -1; //move player to the left
+            if (isFacingRight)  //if the player i facing right then flip to face the left
                 Flip();
         }
         else
         {
-            normalisedHorizontalSpeed = 0;
+            normalisedHorizontalSpeed = 0;  //if no key is pressed then keep the player in the same spot
         }
         if (controller.canJump && Input.GetKeyDown(KeyCode.W))
         {
@@ -134,7 +134,7 @@ public class Player : MonoBehaviour, ITakeDamage
         if (FireProjectileEffect != null)
         {
             var effect = (GameObject) Instantiate(FireProjectileEffect, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
-            effect.transform.localScale = new Vector3(isFacingRigt ? 1 : -1, 1, 1);
+            effect.transform.localScale = new Vector3(isFacingRight ? 1 : -1, 1, 1);
             effect.transform.parent = transform;
             Destroy(effect, 0.08f);
 
@@ -145,7 +145,7 @@ public class Player : MonoBehaviour, ITakeDamage
             }
         }
 
-        var direction = isFacingRigt ? Vector2.right : -Vector2.right;
+        var direction = isFacingRight ? Vector2.right : -Vector2.right;
 
         var projectile = (Projectile)Instantiate(Projectile, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
         projectile.Initialise(gameObject, direction, controller.Velocity);
@@ -157,7 +157,7 @@ public class Player : MonoBehaviour, ITakeDamage
 
     private void Flip()
     {
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.x);
-        isFacingRigt = transform.localScale.x > 0; 
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.x);    //flips the player around by negating the x component of the scale
+        isFacingRight = transform.localScale.x > 0; //sets isFacingRight to true if the player is actually facing the right
     }
 }

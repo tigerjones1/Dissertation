@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
         }
     }
     public bool HandleCollisions { get; set; }
-    public ControllerParameter Parameters { get { return overrideParameters ?? DefaultParameters; } }
+    public ControllerParameter Parameters { get { return overrideParameters ?? DefaultParameters; } }   //if overrideParameters is null it will return defaultParameters
     public GameObject StandingOn { get; private set; }
 
     private Vector2 velocity;
@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
     {
         jumpIn -= Time.deltaTime;
         velocity.y += Parameters.Gravity * Time.deltaTime;
-        Move(Velocity * Time.deltaTime);
+        Move(Velocity * Time.deltaTime);    //move character per their velocity scaled by time
 
     }
 
@@ -107,10 +107,10 @@ public class PlayerController : MonoBehaviour
             if (deltaMovement.y < 0 && wasGrounded)
                 HandleVerticalSlope(ref deltaMovement);
 
-            if (Mathf.Abs(deltaMovement.x) > 0.01f)
+            if (Mathf.Abs(deltaMovement.x) > 0.01f) //checks if character is moving left or right
                 MoveHorizontally(ref deltaMovement);
 
-            MoveVertically(ref deltaMovement);
+            MoveVertically(ref deltaMovement);  //constantly moving vertically(down) due to gravity
         }
 
         _transform.Translate(deltaMovement, Space.World);
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
         if (Time.deltaTime > 0)
             velocity = deltaMovement / Time.deltaTime;
 
-        velocity.x = Mathf.Min(velocity.x, Parameters.MaxVelocity.x);
+        velocity.x = Mathf.Min(velocity.x, Parameters.MaxVelocity.x);   //clamping velocity to the max velocity defined in paramaters
         velocity.y = Mathf.Min(velocity.y, Parameters.MaxVelocity.y);
 
         if (State.IsMovingUpSlope)
@@ -132,8 +132,8 @@ public class PlayerController : MonoBehaviour
 
     private void CalculateRayOrigins() //invoked on every LateUpdate, pre-computes where the Rays will be shot out from
     {
-        var size = new Vector2(boxCollider.size.x * Mathf.Abs(localScale.x), boxCollider.size.y * Mathf.Abs(localScale.y)) / 2;
-        var center = new Vector2(boxCollider.offset.x * localScale.x, boxCollider.offset.y * localScale.y);
+        var size = new Vector2(boxCollider.size.x * Mathf.Abs(localScale.x), boxCollider.size.y * Mathf.Abs(localScale.y)) / 2; //calculates sizze of the character and divides it by 2
+        var center = new Vector2(boxCollider.offset.x * localScale.x, boxCollider.offset.y * localScale.y); //centre of the character calculation
 
         rayCastTopLeft = transform.position + new Vector3(center.x - size.x + SkinWidth, center.y + size.y - SkinWidth);
         rayCastBottomRight = transform.position + new Vector3(center.x + size.x - SkinWidth, center.y - size.y + SkinWidth);
@@ -141,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void MoveHorizontally(ref Vector2 deltaMovement)
+    private void MoveHorizontally(ref Vector2 deltaMovement)    //manipulates detlaMovement
     {
         var isGoingRight = deltaMovement.x > 0;
         var rayDistance = Mathf.Abs(deltaMovement.x) + SkinWidth;
@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
         for (var i = 0; i < TotalHorizontalRays; i++)
         {
             var rayVector = new Vector2(rayOrigin.x, rayOrigin.y + (i * verticalDistanceBetweenRays));
-            Debug.DrawRay(rayVector, rayDirection * rayDistance, Color.red);
+            Debug.DrawRay(rayVector, rayDirection * rayDistance, Color.red);    //displays the rays on the character
 
             var rayCastHit = Physics2D.Raycast(rayVector, rayDirection, rayDistance, PlatformMask);
             if (!rayCastHit)
@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour
             if (i == 0 && HandleHorizontalSlope(ref deltaMovement, Vector2.Angle(rayCastHit.normal, Vector2.up), isGoingRight))
                 break;
 
-            deltaMovement.x = rayCastHit.point.x - rayVector.x;
+            deltaMovement.x = rayCastHit.point.x - rayVector.x; //constrains movement if character hits something
             rayDistance = Mathf.Abs(deltaMovement.x);
 
             if (isGoingRight)
@@ -179,7 +179,7 @@ public class PlayerController : MonoBehaviour
     }
 }
 
-    private void MoveVertically(ref Vector2 deltaMovement)
+    private void MoveVertically(ref Vector2 deltaMovement) //invoked every frame as gravity is always acting upon the character
     {
         var isGoingUp = deltaMovement.y > 0;
         var rayDistance = Mathf.Abs(deltaMovement.y) + SkinWidth;
